@@ -94,32 +94,32 @@ Model ini memberikan hasil terbaik berdasarkan metrik evaluasi pada data uji den
 
 ### Metrik Evaluasi yang Digunakan:
 
-1. **R² Score (Koefisien Determinasi)**
+1. **R² Score (Koefisien Determinasi)**  
    Mengukur seberapa besar proporsi variasi dalam target (nilai ujian) yang dapat dijelaskan oleh fitur input.
 
-   \[
+   $$
    R^2 = 1 - \frac{SS_{res}}{SS_{tot}} = 1 - \frac{\sum(y_i - \hat{y}_i)^2}{\sum(y_i - \bar{y})^2}
-   \]
+   $$
 
    - Nilai R² mendekati 1 berarti model menjelaskan data dengan baik.
    - Nilai R² mendekati 0 berarti model buruk dalam menjelaskan data.
 
-2. **Mean Squared Error (MSE)**
+2. **Mean Squared Error (MSE)**  
    Mengukur rata-rata dari kuadrat selisih antara nilai prediksi dan nilai aktual.
 
-   \[
+   $$
    MSE = \frac{1}{n} \sum_{i=1}^{n}(y_i - \hat{y}_i)^2
-   \]
+   $$
 
    - Semakin kecil MSE, semakin baik prediksi model.
    - Penalti besar untuk kesalahan prediksi yang ekstrem.
 
-3. **Mean Absolute Error (MAE)**
+3. **Mean Absolute Error (MAE)**  
    Rata-rata selisih absolut antara nilai prediksi dan nilai aktual.
 
-   \[
+   $$
    MAE = \frac{1}{n} \sum_{i=1}^{n} |y_i - \hat{y}_i|
-   \]
+   $$
 
    - Lebih mudah diinterpretasikan daripada MSE.
    - Kurang sensitif terhadap outlier dibanding MSE.
