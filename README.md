@@ -35,9 +35,9 @@ Credé, M., & Kuncel, N. R. (2008). Study habits, skills, and attitudes: The thi
 ---
 
 ## Data Understanding
-Dataset saya dapatkan dari Kaggle, link: https://www.kaggle.com/datasets/jayaantanaath/student-habits-vs-academic-performance
+**Dataset saya dapatkan dari Kaggle, link: https://www.kaggle.com/datasets/jayaantanaath/student-habits-vs-academic-performance**
 
-Dataset berisi 1.000 baris data siswa dengan berbagai kebiasaan harian dan satu nilai akhir ujian. Variabel-variabel penting meliputi:
+**Dataset berisi 1.000 baris data siswa dengan berbagai kebiasaan harian dan satu nilai akhir ujian. Variabel-variabel penting meliputi:**
 
 - `student_id`: ID unik mahasiswa.
 - `age`: Usia mahasiswa (dalam tahun).
@@ -56,69 +56,84 @@ Dataset berisi 1.000 baris data siswa dengan berbagai kebiasaan harian dan satu 
 - `extracurricular_participation`: Partisipasi dalam kegiatan ekstrakurikuler (`Yes` atau `No`).
 - `exam_score`: Nilai ujian akhir mahasiswa — **merupakan target prediksi** dalam proyek ini.
 
-Data sudah bersih akan tetapi terdapat missing values pada kolom `parental_education_level` dengan jumlah missing values sebanyak 91.
+**Data sudah bersih akan tetapi terdapat missing values pada kolom `parental_education_level` dengan jumlah missing values sebanyak 91.** <br>
+![WhatsApp Image 2025-05-28 at 00 27 37_a2818f49](https://github.com/user-attachments/assets/4b97cb93-28c8-42aa-9f06-916b4b2f968a)
+
+<br>**Data juga tidak memiliki duplikat.** </br>
+![WhatsApp Image 2025-05-28 at 00 26 03_8af62c2d](https://github.com/user-attachments/assets/779f8c15-e3c7-427e-b836-dcaf798eed0d)
+
 
 ---
 
 ## Data Preparation
 
-Langkah-langkah persiapan data:
-
-1. **Import Dataset**
-2. **Pengisian Missing Values**: Missing values ditangani dengan memasukkan nilai modus (mode).
+- **Pengisian Missing Values**: Missing values ditangani dengan memasukkan nilai modus (mode).
     ```python
-   df['parental_education_level'].fillna(df['parental_education_level'].mode()[0], inplace=True)
-3. **Normalisasi**: Dilakukan standardisasi fitur menggunakan StandardScaler.
-   ```python
-   preprocessor = ColumnTransformer([
-       ('num', StandardScaler(), numerical_cols),
-       ('cat', OneHotEncoder(drop='first'), categorical_cols)
-   ])
-4. **Split Data**: Data dibagi menjadi data latih dan uji (80%:20%).
-   ```python
-   X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+   df['parental_education_level'].fillna(df['parental_education_level'].mode()[0], inplace=True)```<br>
+- **Feature Selection & Categorization**
+    ```python
+    # Drop kolom student_id dan target
+    X = df.drop(['student_id', 'exam_score'], axis=1)
+    y = df['exam_score']
+    
+    # Kolom kategorikal dan numerikal
+    categorical_cols = [
+        'gender',
+        'part_time_job',
+        'diet_quality',
+        'parental_education_level',
+        'internet_quality',
+        'extracurricular_participation'
+    ]
+    
+    numerical_cols = [
+        'age',
+        'study_hours_per_day',
+        'social_media_hours',
+        'netflix_hours',
+        'attendance_percentage',
+        'sleep_hours',
+        'exercise_frequency',
+        'mental_health_rating'
+    ]```
+- **Normalisasi**: Dilakukan standardisasi fitur menggunakan StandardScaler.
+    ```python
+       preprocessor = ColumnTransformer([
+           ('num', StandardScaler(), numerical_cols),
+           ('cat', OneHotEncoder(drop='first'), categorical_cols)
+       ])``` <br>
+- **Split Data**: Data dibagi menjadi data latih dan uji (80%:20%).
+    ```python
+       X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)```
 
 Alasan:
-Langkah-langkah persiapan data dilakukan untuk memastikan kualitas dan kesiapan data sebelum digunakan dalam pelatihan model machine learning. Dataset pertama-tama diimpor menggunakan Pandas agar dapat diolah dan dianalisis dalam lingkungan Python. Selanjutnya, dilakukan penanganan missing values dengan mengisi nilai kosong pada kolom kategorikal menggunakan modus, karena pendekatan ini mempertahankan distribusi kategori yang dominan dan tidak memperkenalkan nilai baru yang bias. Setelah itu, dilakukan normalisasi data numerik menggunakan StandardScaler agar setiap fitur berada pada skala yang sebanding dan mempermudah proses pembelajaran model. Sementara itu, data kategorikal dikonversi ke format numerik menggunakan OneHotEncoder agar dapat digunakan oleh algoritma machine learning. Terakhir, data dibagi menjadi data latih dan data uji (80%:20%) untuk memisahkan proses pelatihan dan evaluasi, sehingga performa model dapat diuji pada data yang tidak terlihat sebelumnya dan menghindari overfitting.
+Persiapan data dilakukan untuk memastikan kualitas dan kesiapan data sebelum digunakan dalam pelatihan model machine learning. Dilakukan penanganan missing values dengan mengisi nilai kosong pada kolom kategorikal menggunakan modus, karena pendekatan ini mempertahankan distribusi kategori yang dominan. Lalu dilakukan feature selection yang dimana memilih `exam_score` menjadi kolom target (memindahkannya dari kolom feature) dan menghapus kolom `student_id`. Setelah itu, dilakukan normalisasi data numerik menggunakan StandardScaler agar setiap fitur berada pada skala yang sebanding dan mempermudah proses pembelajaran model. Sementara itu, data kategorikal dikonversi ke format numerik menggunakan OneHotEncoder agar dapat digunakan oleh algoritma machine learning. Terakhir, data dibagi menjadi data latih dan data uji (80%:20%) untuk memisahkan proses pelatihan dan evaluasi, sehingga performa model dapat diuji pada data yang tidak terlihat sebelumnya dan menghindari overfitting.
 
 ---
 
 ## Modeling
 
-### Model yang Digunakan
+### Cara Kerja Model yang Digunakan
 
 1. **Linear Regression**
-   - Model dasar untuk regresi linier.
-   - Cepat, interpretatif, dan cocok sebagai baseline model.
+   - Linear Regression bekerja dengan mencari garis lurus terbaik yang dapat memetakan hubungan antara fitur input dan target output.
+   - Model ini menghitung koefisien untuk setiap fitur agar dapat meminimalkan selisih kuadrat antara nilai prediksi dan nilai aktual (mean squared error). <br>
+   ![WhatsApp Image 2025-05-28 at 00 54 38_0562e06b](https://github.com/user-attachments/assets/2d460249-f05d-4e59-b01a-c40504684d1a)
+
    - **Kelebihan:** sederhana dan efisien untuk data linear.
    - **Kekurangan:** tidak menangani hubungan non-linear.
 
 2. **Random Forest Regressor**
-   - Model ensemble berbasis decision tree.
-   - Cocok untuk menangani non-linearitas dan interaksi antar variabel.
+   - Random Forest bekerja dengan membangun banyak pohon keputusan (decision trees) dari subset data yang berbeda.
+   - Setiap pohon memberikan hasil prediksi, lalu model mengambil rata-rata dari semua prediksi tersebut untuk menghasilkan output akhir. Pendekatan ini mengurangi overfitting dan meningkatkan akurasi prediksi.
    - **Kelebihan:** akurasi tinggi, robust terhadap outlier.
    - **Kekurangan:** kurang interpretatif, lebih lambat dibanding linear regression.
 
 3. **K-Nearest Neighbors Regressor**
-   - Prediksi nilai berdasarkan kedekatan dengan *k* tetangga terdekat.
+   - KNN bekerja dengan mencari sejumlah 𝐾 data latih yang paling dekat (nearest neighbors) dengan data uji berdasarkan jarak (misalnya jarak Euclidean).
+   - Nilai prediksi dihitung sebagai rata-rata dari nilai target 𝐾 tetangga terdekat tersebut.
    - **Kelebihan:** tidak memerlukan asumsi distribusi data.
    - **Kekurangan:** sensitif terhadap skala fitur dan outlier.
-### Tahapan dan Parameter Pemodelan
-
-1. **Pra-pemrosesan Data:**  
-   Data dibersihkan dari nilai kosong dan diubah ke format numerik menggunakan teknik encoding dan scaling (melalui `ColumnTransformer` dalam `preprocessor`).
-
-2. **Pembagian Data:**  
-   Dataset dibagi menjadi data latih dan data uji dengan rasio 80:20 menggunakan `train_test_split`.
-
-3. **Pemilihan Model:**  
-   Tiga algoritma dipilih untuk dibandingkan performanya:  
-   - **Linear Regression**
-   - **Random Forest Regressor** (`n_estimators=100`, `random_state=42`)
-   - **K-Nearest Neighbors** (default `n_neighbors=5`)
-
-4. **Evaluasi Model:**  
-   Model dievaluasi menggunakan metrik seperti *Mean Squared Error (MSE)* dan *R² Score*.
 
 ---
 
@@ -222,7 +237,7 @@ Grafik ini menunjukkan **pengaruh masing-masing fitur terhadap nilai ujian** ber
 
 ## Fitur dengan Pengaruh Positif Terbesar:
 
-1. **`num__study_hours_per_day` (~14.5)**  
+1. **`num__study_hours_per_day` (~14.14)**  
    → Semakin banyak waktu belajar per hari, semakin tinggi nilai ujian.
 
 2. **`num__mental_health_rating` (~5.5)**  
@@ -235,10 +250,10 @@ Grafik ini menunjukkan **pengaruh masing-masing fitur terhadap nilai ujian** ber
 
 ## Fitur dengan Pengaruh Negatif Terbesar:
 
-1. **`num__social_media_hours` (~-2.5)**  
+1. **`num__social_media_hours` (~-3.13)**  
    → Semakin banyak waktu di media sosial, nilai ujian cenderung turun.
 
-2. **`num__netflix_hours` (~-2.0)**  
+2. **`num__netflix_hours` (~-2.53)**  
    → Sama halnya, waktu menonton Netflix berdampak negatif.
 
 3. Beberapa kategori seperti `cat__diet_quality_Poor`, `cat__internet_quality_Poor`, dan `cat__parental_education_level_High School` juga memiliki pengaruh negatif, walaupun lebih kecil.
