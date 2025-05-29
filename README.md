@@ -56,7 +56,7 @@ Credé, M., & Kuncel, N. R. (2008). Study habits, skills, and attitudes: The thi
 - `extracurricular_participation`: Partisipasi dalam kegiatan ekstrakurikuler (`Yes` atau `No`).
 - `exam_score`: Nilai ujian akhir mahasiswa — **merupakan target prediksi** dalam proyek ini.
 
-**Data sudah bersih akan tetapi terdapat missing values pada kolom `parental_education_level` dengan jumlah missing values sebanyak 91.** <br>
+**Terdapat missing values pada kolom `parental_education_level` dengan jumlah missing values sebanyak 91.** <br>
 ![WhatsApp Image 2025-05-28 at 00 27 37_a2818f49](https://github.com/user-attachments/assets/4b97cb93-28c8-42aa-9f06-916b4b2f968a)
 
 <br>**Data juga tidak memiliki duplikat.** </br>
@@ -146,7 +146,36 @@ models = {
     'K-Nearest Neighbors': KNeighborsRegressor()
 }
 ```
+#### Linear Regression
 
+Pada algoritma **Linear Regression**, model dibangun dengan menyebutkan parameter secara eksplisit, yang berarti menggunakan **parameter default** dari `LinearRegression()` di scikit-learn. Secara default, parameter yang digunakan adalah:
+
+- `fit_intercept=True`: Menentukan apakah model akan menghitung intercept (bias) atau tidak.
+- `normalize='deprecated'`: Normalisasi tidak lagi digunakan langsung karena praktiknya digantikan oleh pipeline preprocessing.
+- `copy_X=True`: Menentukan apakah X akan disalin sebelum proses fitting.
+- `n_jobs=None`: Tidak menggunakan paralelisasi secara default.
+
+#### Random Forest Regressor
+
+Untuk algoritma **Random Forest Regressor**, parameter yang digunakan adalah:
+
+- `n_estimators=100`: Menentukan jumlah pohon dalam hutan.
+- `random_state=42`: Menentukan seed agar hasil yang didapat bersifat reproducible.
+
+Parameter lainnya menggunakan nilai default, yaitu:
+
+- `max_depth=None`: Tidak membatasi kedalaman pohon.
+- `min_samples_split=2`: Minimum jumlah sampel untuk membagi node.
+- `min_samples_leaf=1`: Minimum jumlah sampel pada daun pohon.
+
+#### K-Nearest Neighbors Regressor
+
+Untuk algoritma **K-Nearest Neighbors (KNN) Regressor**, model digunakan dengan parameter default, yaitu:
+
+- `n_neighbors=5`: Jumlah tetangga terdekat yang digunakan untuk prediksi.
+- `weights='uniform'`: Semua tetangga memiliki kontribusi yang sama dalam prediksi.
+- `algorithm='auto'`: Scikit-learn secara otomatis memilih algoritma terbaik.
+- `metric='minkowski'` dengan `p=2`: Ini berarti menggunakan **jarak Euclidean**.
 Di sini, saya juga menggunakan **pipeline** untuk menggabungkan langkah preprocessing dan pelatihan model ke dalam satu alur yang terstruktur. Dengan pipeline, proses seperti normalisasi dan encoding akan diterapkan secara konsisten pada data latih dan uji, sehingga menghindari kesalahan manual dan kebocoran data (*data leakage*).
 
 Pipeline juga mempermudah pengujian banyak model karena preprocessing tidak perlu ditulis ulang untuk setiap model. Selain itu, pipeline membuat kode lebih rapi, efisien, dan mudah disimpan.
@@ -169,7 +198,7 @@ for name, model in models.items():
     trained_models[name] = pipe
     predictions[name] = pipe.predict(X_test)
 ```
-
+Setiap data latih (`X_train`) diproses terlebih dahulu menggunakan `preprocessor`, lalu hasilnya digunakan untuk melatih model Linear Regression, Random Forest, dan K-Nearest Neighbors. Setelah proses pelatihan, pipeline yang sudah dilatih disimpan dalam variabel `trained_models`, dan digunakan untuk memprediksi data uji (`X_test`). Hasil prediksi dari masing-masing model disimpan dalam variabel `predictions`.
 
 ## Evaluation
 
